@@ -1,2 +1,0 @@
-# DGCJXPagingView
-DGCJXPagingView

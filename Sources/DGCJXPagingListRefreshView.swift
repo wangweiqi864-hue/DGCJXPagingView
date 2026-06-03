@@ -19,7 +19,7 @@ open class DGCJXPagingListRefreshView: DGCJXPagingView {
 
     override open func preferredProcessMainTableViewDidScroll(_ scrollView: UIScrollView) {
         if pinSectionHeaderVerticalOffset != 0 {
-            if !(dgc_currentScrollingListView != nil && dgc_currentScrollingListView!.contentOffset.y > minContentOffsetYInListScrollView(dgc_currentScrollingListView!)) {
+            if !(currentScrollingListView != nil && currentScrollingListView!.contentOffset.y > minContentOffsetYInListScrollView(currentScrollingListView!)) {
                 //没有处于滚动某一个listView的状态
                 if scrollView.contentOffset.y <= 0 {
                     mainTableView.bounces = false
@@ -30,7 +30,7 @@ open class DGCJXPagingListRefreshView: DGCJXPagingView {
                 }
             }
         }
-        guard let dgc_currentScrollingListView = dgc_currentScrollingListView else { return }
+        guard let dgc_currentScrollingListView = currentScrollingListView else { return }
         if (dgc_currentScrollingListView.contentOffset.y > minContentOffsetYInListScrollView(dgc_currentScrollingListView)) {
             //mainTableView的header已经滚动不见，开始滚动某一个listView，那么固定mainTableView的contentOffset，让其不动
             setMainTableViewToMaxContentOffsetY()
@@ -53,7 +53,7 @@ open class DGCJXPagingListRefreshView: DGCJXPagingView {
     }
     
     override open func preferredProcessListViewDidScroll(scrollView: UIScrollView) {
-        guard let dgc_currentScrollingListView = dgc_currentScrollingListView else { return }
+        guard let dgc_currentScrollingListView = currentScrollingListView else { return }
         var dgc_shouldProcess = true
         if dgc_currentScrollingListView.contentOffset.y > dgc_lastScrollingListViewContentOffsetY {
             //往上滚动

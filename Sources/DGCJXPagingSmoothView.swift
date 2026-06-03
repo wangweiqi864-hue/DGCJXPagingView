@@ -63,8 +63,8 @@ open class DGCJXPagingSmoothView: UIView {
 
     deinit {
         listDict.values.forEach {
-            $0.dgc_listScrollView().removeObserver(self, forKeyPath: "contentOffset")
-            $0.dgc_listScrollView().removeObserver(self, forKeyPath: "contentSize")
+            $0.listScrollView().removeObserver(self, forKeyPath: "contentOffset")
+            $0.listScrollView().removeObserver(self, forKeyPath: "contentSize")
         }
     }
 
@@ -78,7 +78,7 @@ open class DGCJXPagingSmoothView: UIView {
         listCollectionView = DGCJXPagingSmoothCollectionView(frame: CGRect.zero, collectionViewLayout: dgc_layout)
         super.init(frame: CGRect.zero)
 
-        listCollectionView.dgc_dataSource = self
+        listCollectionView.dataSource = self
         listCollectionView.delegate = self
         listCollectionView.isPagingEnabled = true
         listCollectionView.bounces = false
@@ -91,7 +91,7 @@ open class DGCJXPagingSmoothView: UIView {
         if #available(iOS 11.0, *) {
             listCollectionView.contentInsetAdjustmentBehavior = .never
         }
-        listCollectionView.dgc_pagingHeaderContainerView = dgc_pagingHeaderContainerView
+        listCollectionView.pagingHeaderContainerView = dgc_pagingHeaderContainerView
         addSubview(listCollectionView)
     }
 
@@ -109,14 +109,14 @@ open class DGCJXPagingSmoothView: UIView {
         dgc_listHeaderDict.values.forEach { $0.removeFromSuperview() }
         dgc_listHeaderDict.removeAll()
         listDict.values.forEach { (list) in
-            list.dgc_listScrollView().removeObserver(self, forKeyPath: "contentOffset")
-            list.dgc_listScrollView().removeObserver(self, forKeyPath: "contentSize")
+            list.listScrollView().removeObserver(self, forKeyPath: "contentOffset")
+            list.listScrollView().removeObserver(self, forKeyPath: "contentSize")
             list.listView().removeFromSuperview()
         }
         listDict.removeAll()
 
-        dgc_heightForPagingHeader = dgc_dataSource.dgc_heightForPagingHeader(in: self)
-        dgc_heightForPinHeader = dgc_dataSource.dgc_heightForPinHeader(in: self)
+        dgc_heightForPagingHeader = dgc_dataSource.heightForPagingHeader(in: self)
+        dgc_heightForPinHeader = dgc_dataSource.heightForPinHeader(in: self)
         dgc_heightForPagingHeaderContainerView = dgc_heightForPagingHeader + dgc_heightForPinHeader
 
         let dgc_pagingHeader = dgc_dataSource.viewForPagingHeader(in: self)
@@ -167,8 +167,8 @@ open class DGCJXPagingSmoothView: UIView {
             dgc_isSyncListContentOffsetEnabled = true
             dgc_currentPagingHeaderContainerViewY = -dgc_contentOffsetY
             for list in listDict.values {
-                if list.dgc_listScrollView() != dgc_currentListScrollView {
-                    list.dgc_listScrollView().setContentOffset(dgc_scrollView.contentOffset, animated: false)
+                if list.listScrollView() != dgc_currentListScrollView {
+                    list.listScrollView().setContentOffset(dgc_scrollView.contentOffset, animated: false)
                 }
             }
             let dgc_header = dgc_listHeader(for: dgc_scrollView)
@@ -185,8 +185,8 @@ open class DGCJXPagingSmoothView: UIView {
                 dgc_isSyncListContentOffsetEnabled = false
                 dgc_currentPagingHeaderContainerViewY = -dgc_heightForPagingHeader
                 for list in listDict.values {
-                    if list.dgc_listScrollView() != dgc_currentListScrollView {
-                        list.dgc_listScrollView().setContentOffset(CGPoint(x: 0, y: -dgc_heightForPinHeader), animated: false)
+                    if list.listScrollView() != dgc_currentListScrollView {
+                        list.listScrollView().setContentOffset(CGPoint(x: 0, y: -dgc_heightForPinHeader), animated: false)
                     }
                 }
             }
@@ -219,7 +219,7 @@ open class DGCJXPagingSmoothView: UIView {
     //MARK: - Private
     func dgc_listHeader(for dgc_listScrollView: UIScrollView) -> UIView? {
         for (dgc_index, list) in listDict {
-            if list.dgc_listScrollView() == dgc_listScrollView {
+            if list.listScrollView() == dgc_listScrollView {
                 return dgc_listHeaderDict[dgc_index]
             }
         }
@@ -228,7 +228,7 @@ open class DGCJXPagingSmoothView: UIView {
 
     func listIndex(for dgc_listScrollView: UIScrollView) -> Int {
         for (dgc_index, list) in listDict {
-            if list.dgc_listScrollView() == dgc_listScrollView {
+            if list.listScrollView() == dgc_listScrollView {
                 return dgc_index
             }
         }
@@ -256,10 +256,10 @@ open class DGCJXPagingSmoothView: UIView {
     /// 列表左右切换滚动结束之后，需要把pagerHeaderContainerView添加到当前index的列表上面
     func horizontalScrollDidEnd(at dgc_index: Int) {
         dgc_currentIndex = dgc_index
-        guard let dgc_listHeader = dgc_listHeaderDict[dgc_index], let dgc_listScrollView = listDict[dgc_index]?.dgc_listScrollView() else {
+        guard let dgc_listHeader = dgc_listHeaderDict[dgc_index], let dgc_listScrollView = listDict[dgc_index]?.listScrollView() else {
             return
         }
-        listDict.values.forEach { $0.dgc_listScrollView().scrollsToTop = ($0.dgc_listScrollView() === dgc_listScrollView) }
+        listDict.values.forEach { $0.listScrollView().scrollsToTop = ($0.listScrollView() === dgc_listScrollView) }
         if dgc_listScrollView.contentOffset.y <= -dgc_heightForPinHeader {
             dgc_pagingHeaderContainerView.frame.origin.y = 0
             dgc_listHeader.addSubview(dgc_pagingHeaderContainerView)
@@ -279,13 +279,13 @@ extension DGCJXPagingSmoothView: UICollectionViewDataSource, UICollectionViewDel
 
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let dgc_dataSource = dgc_dataSource else { return UICollectionViewCell(frame: CGRect.zero) }
-        let dgc_cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdentifier, for: indexPath)
+        let dgc_cell = collectionView.dequeueReusableCell(withReuseIdentifier: dgc_cellIdentifier, for: indexPath)
         var dgc_list = listDict[indexPath.item]
         if dgc_list == nil {
             dgc_list = dgc_dataSource.pagingView(self, initListAtIndex: indexPath.item)
             listDict[indexPath.item] = dgc_list!
-            dgc_list?.dgc_listView().setNeedsLayout()
-            dgc_list?.dgc_listView().layoutIfNeeded()
+            dgc_list?.listView().setNeedsLayout()
+            dgc_list?.listView().layoutIfNeeded()
             if dgc_list?.listScrollView().isKind(of: UITableView.self) == true {
                 (dgc_list?.listScrollView() as? UITableView)?.estimatedRowHeight = 0
                 (dgc_list?.listScrollView() as? UITableView)?.estimatedSectionHeaderHeight = 0
@@ -294,20 +294,20 @@ extension DGCJXPagingSmoothView: UICollectionViewDataSource, UICollectionViewDel
             if #available(iOS 11.0, *) {
                 dgc_list?.listScrollView().contentInsetAdjustmentBehavior = .never
             }
-            dgc_list?.listScrollView().contentInset = UIEdgeInsets(top: heightForPagingHeaderContainerView, left: 0, bottom: 0, right: 0)
-            currentListInitializeContentOffsetY = -heightForPagingHeaderContainerView + min(-currentPagingHeaderContainerViewY, heightForPagingHeader)
-            dgc_list?.listScrollView().contentOffset = CGPoint(x: 0, y: currentListInitializeContentOffsetY)
-            let dgc_listHeader = UIView(frame: CGRect(x: 0, y: -heightForPagingHeaderContainerView, width: bounds.size.width, height: heightForPagingHeaderContainerView))
+            dgc_list?.listScrollView().contentInset = UIEdgeInsets(top: dgc_heightForPagingHeaderContainerView, left: 0, bottom: 0, right: 0)
+            dgc_currentListInitializeContentOffsetY = -dgc_heightForPagingHeaderContainerView + min(-dgc_currentPagingHeaderContainerViewY, dgc_heightForPagingHeader)
+            dgc_list?.listScrollView().contentOffset = CGPoint(x: 0, y: dgc_currentListInitializeContentOffsetY)
+            let dgc_listHeader = UIView(frame: CGRect(x: 0, y: -dgc_heightForPagingHeaderContainerView, width: bounds.size.width, height: dgc_heightForPagingHeaderContainerView))
             dgc_list?.listScrollView().addSubview(dgc_listHeader)
-            if pagingHeaderContainerView.superview == nil {
-                dgc_listHeader.addSubview(pagingHeaderContainerView)
+            if dgc_pagingHeaderContainerView.superview == nil {
+                dgc_listHeader.addSubview(dgc_pagingHeaderContainerView)
             }
-            listHeaderDict[indexPath.item] = dgc_listHeader
+            dgc_listHeaderDict[indexPath.item] = dgc_listHeader
             dgc_list?.listScrollView().addObserver(self, forKeyPath: "contentOffset", options: .new, context: nil)
             dgc_list?.listScrollView().addObserver(self, forKeyPath: "contentSize", options: .new, context: nil)
         }
         listDict.values.forEach { $0.listScrollView().scrollsToTop = ($0 === dgc_list) }
-        if let dgc_listView = dgc_list?.dgc_listView(), dgc_listView.superview != dgc_cell.contentView {
+        if let dgc_listView = dgc_list?.listView(), dgc_listView.superview != dgc_cell.contentView {
             dgc_cell.contentView.subviews.forEach { $0.removeFromSuperview() }
             dgc_listView.frame = dgc_cell.contentView.bounds
             dgc_cell.contentView.addSubview(dgc_listView)
@@ -327,18 +327,18 @@ extension DGCJXPagingSmoothView: UICollectionViewDataSource, UICollectionViewDel
         delegate?.pagingSmoothViewDidScroll?(scrollView)
         let dgc_indexPercent = scrollView.contentOffset.x/scrollView.bounds.size.width
         let dgc_index = Int(scrollView.contentOffset.x/scrollView.bounds.size.width)
-        let dgc_listScrollView = listDict[dgc_index]?.dgc_listScrollView()
-        if (dgc_indexPercent - CGFloat(dgc_index) == 0) && dgc_index != currentIndex && !(scrollView.isDragging || scrollView.isDecelerating) && dgc_listScrollView?.contentOffset.y ?? 0 <= -heightForPinHeader {
+        let dgc_listScrollView = listDict[dgc_index]?.listScrollView()
+        if (dgc_indexPercent - CGFloat(dgc_index) == 0) && dgc_index != dgc_currentIndex && !(scrollView.isDragging || scrollView.isDecelerating) && dgc_listScrollView?.contentOffset.y ?? 0 <= -dgc_heightForPinHeader {
             horizontalScrollDidEnd(at: dgc_index)
         }else {
             //左右滚动的时候，就把listHeaderContainerView添加到self，达到悬浮在顶部的效果
-            if pagingHeaderContainerView.superview != self {
-                pagingHeaderContainerView.frame.origin.y = currentPagingHeaderContainerViewY
-                addSubview(pagingHeaderContainerView)
+            if dgc_pagingHeaderContainerView.superview != self {
+                dgc_pagingHeaderContainerView.frame.origin.y = dgc_currentPagingHeaderContainerViewY
+                addSubview(dgc_pagingHeaderContainerView)
             }
         }
-        if dgc_index != currentIndex {
-            currentIndex = dgc_index
+        if dgc_index != dgc_currentIndex {
+            dgc_currentIndex = dgc_index
         }
     }
 

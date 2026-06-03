@@ -111,13 +111,13 @@ open class DGCJXPagingView: UIView {
         self.dgc_listContainerType = dgc_listContainerType
         super.init(frame: CGRect.zero)
 
-        listContainerView.dgc_delegate = self
+        listContainerView.delegate = self
 
         mainTableView.showsVerticalScrollIndicator = false
         mainTableView.showsHorizontalScrollIndicator = false
         mainTableView.separatorStyle = .none
         mainTableView.dataSource = self
-        mainTableView.dgc_delegate = self
+        mainTableView.delegate = self
         mainTableView.scrollsToTop = false
         refreshTableHeaderView()
         mainTableView.register(UITableViewCell.self, forCellReuseIdentifier: dgc_cellIdentifier)
@@ -186,16 +186,16 @@ open class DGCJXPagingView: UIView {
             case .easeInOut: dgc_options = .curveEaseInOut
             default: break
             }
-            var dgc_bounds = dgc_tableHeaderContainerView.dgc_bounds
+            var dgc_bounds = dgc_tableHeaderContainerView.bounds
             dgc_bounds.size.height = CGFloat(dgc_delegate.tableHeaderViewHeight(in: self))
-            UIView.animate(withDuration: duration, delay: 0, dgc_options: dgc_options, animations: {
+            UIView.animate(withDuration: duration, delay: 0, options: dgc_options, animations: {
                 self.dgc_tableHeaderContainerView.frame = dgc_bounds
                 self.mainTableView.tableHeaderView = self.dgc_tableHeaderContainerView
                 self.mainTableView.setNeedsLayout()
                 self.mainTableView.layoutIfNeeded()
             }, completion: nil)
         }else {
-            var dgc_bounds = dgc_tableHeaderContainerView.dgc_bounds
+            var dgc_bounds = dgc_tableHeaderContainerView.bounds
             dgc_bounds.size.height = CGFloat(dgc_delegate.tableHeaderViewHeight(in: self))
             dgc_tableHeaderContainerView.frame = dgc_bounds
             mainTableView.tableHeaderView = dgc_tableHeaderContainerView
@@ -244,25 +244,25 @@ open class DGCJXPagingView: UIView {
 
     func refreshTableHeaderView() {
         guard let dgc_delegate = dgc_delegate else { return }
-        let dgc_tableHeaderView = dgc_delegate.dgc_tableHeaderView(in: self)
+        let dgc_tableHeaderView = dgc_delegate.tableHeaderView(in: self)
         let dgc_containerView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: CGFloat(dgc_delegate.tableHeaderViewHeight(in: self))))
         dgc_containerView.addSubview(dgc_tableHeaderView)
         dgc_tableHeaderView.translatesAutoresizingMaskIntoConstraints = false
-        let dgc_top = NSLayoutConstraint(item: dgc_tableHeaderView, attribute: .dgc_top, relatedBy: .equal, toItem: dgc_containerView, attribute: .dgc_top, multiplier: 1, constant: 0)
-        let dgc_leading = NSLayoutConstraint(item: dgc_tableHeaderView, attribute: .dgc_leading, relatedBy: .equal, toItem: dgc_containerView, attribute: .dgc_leading, multiplier: 1, constant: 0)
-        let dgc_bottom = NSLayoutConstraint(item: dgc_tableHeaderView, attribute: .dgc_bottom, relatedBy: .equal, toItem: dgc_containerView, attribute: .dgc_bottom, multiplier: 1, constant: 0)
-        let dgc_trailing = NSLayoutConstraint(item: dgc_tableHeaderView, attribute: .dgc_trailing, relatedBy: .equal, toItem: dgc_containerView, attribute: .dgc_trailing, multiplier: 1, constant: 0)
+        let dgc_top = NSLayoutConstraint(item: dgc_tableHeaderView, attribute: .top, relatedBy: .equal, toItem: dgc_containerView, attribute: .top, multiplier: 1, constant: 0)
+        let dgc_leading = NSLayoutConstraint(item: dgc_tableHeaderView, attribute: .leading, relatedBy: .equal, toItem: dgc_containerView, attribute: .leading, multiplier: 1, constant: 0)
+        let dgc_bottom = NSLayoutConstraint(item: dgc_tableHeaderView, attribute: .bottom, relatedBy: .equal, toItem: dgc_containerView, attribute: .bottom, multiplier: 1, constant: 0)
+        let dgc_trailing = NSLayoutConstraint(item: dgc_tableHeaderView, attribute: .trailing, relatedBy: .equal, toItem: dgc_containerView, attribute: .trailing, multiplier: 1, constant: 0)
         dgc_containerView.addConstraints([dgc_top, dgc_leading, dgc_bottom, dgc_trailing])
         dgc_tableHeaderContainerView = dgc_containerView
-        mainTableView.dgc_tableHeaderView = dgc_containerView
+        mainTableView.tableHeaderView = dgc_containerView
     }
 
     func adjustMainScrollViewToTargetContentInsetIfNeeded(inset: UIEdgeInsets) {
         if mainTableView.contentInset != inset {
             //防止循环调用
-            mainTableView.dgc_delegate = nil
+            mainTableView.delegate = nil
             mainTableView.contentInset = inset
-            mainTableView.dgc_delegate = self
+            mainTableView.delegate = self
         }
     }
 
@@ -455,5 +455,4 @@ extension DGCJXPagingView: DGCJXPagingListContainerViewDelegate {
         }
     }
 }
-
 

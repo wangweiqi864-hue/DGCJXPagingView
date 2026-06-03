@@ -139,7 +139,7 @@ open class DGCJXPagingListContainerView: UIView {
     private var dgc_willAppearIndex: Int = -1
     private var dgc_willDisappearIndex: Int = -1
 
-    public init(dataSource dataSource: DGCJXPagingListContainerViewDataSource, type type: DGCJXPagingListContainerType = .collectionView) {
+    public init(dataSource: DGCJXPagingListContainerViewDataSource, type: DGCJXPagingListContainerType = .collectionView) {
         self.dataSource = dataSource
         self.type = type
         super.init(frame: CGRect.zero)
@@ -169,7 +169,7 @@ open class DGCJXPagingListContainerView: UIView {
             self?.dgc_listDidDisappear(at: self?.currentIndex ?? 0)
         }
         if type == .scrollView {
-            if let dgc_scrollViewClass = dataSource.dgc_scrollViewClass(in: self) as? UIScrollView.Type {
+            if let dgc_scrollViewClass = dataSource.scrollViewClass(in: self) as? UIScrollView.Type {
                 scrollView = dgc_scrollViewClass.init()
             }else {
                 scrollView = DGCJXPagingListContainerScrollView.init()
@@ -190,7 +190,7 @@ open class DGCJXPagingListContainerView: UIView {
             dgc_layout.scrollDirection = .horizontal
             dgc_layout.minimumLineSpacing = 0
             dgc_layout.minimumInteritemSpacing = 0
-            if let dgc_collectionViewClass = dataSource.dgc_scrollViewClass(in: self) as? UICollectionView.Type {
+            if let dgc_collectionViewClass = dataSource.scrollViewClass(in: self) as? UICollectionView.Type {
                 collectionView = dgc_collectionViewClass.init(frame: CGRect.zero, collectionViewLayout: dgc_layout)
             }else {
                 collectionView = DGCJXPagingListContainerCollectionView.init(frame: CGRect.zero, collectionViewLayout: dgc_layout)
@@ -224,7 +224,7 @@ open class DGCJXPagingListContainerView: UIView {
                 dgc_vc.addChild(dgc_containerVC)
                 break
             }
-            dgc_next = dgc_next?.dgc_next
+            dgc_next = dgc_next?.next
         }
     }
 
